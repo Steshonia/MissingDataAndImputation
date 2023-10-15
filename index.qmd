@@ -14,7 +14,27 @@ When data is missing in a dataset, it can be handled in two ways. First would be
 	
 "Multivariate Imputation by Chained Equation (MICE) predicts missing data using the existing data of other variables. Then it replaces missing values using the predicted values and creates a dataset called imputed dataset. By iteration, it creates multiple imputed datasets. Each dataset is then analyzed using standard statistical analysis techniques, and multiple analysis results are provided." [1] The downside of this methodology is that it can be complex to implement, assumes that the data is missing at random, has a risk of overfitting, and requires many resources; however, it has the ability to impute more accurate data than single imputation based on underlying patterns in the data
 
+```{r}
+#| warning: false
 
+library(readr)
+library(lava)
+library(simputation)
+library(ggplot2)
+
+cats_uk <- readr::read_csv('cats_uk.csv')
+cats_uk_reference <- readr::read_csv('cats_uk_reference.csv')
+
+cats <- merge(cats_uk, cats_uk_reference, by='tag_id')
+summary(cats_uk)
+
+cats_uk_missing <- makemissing(cats_uk)
+
+ggplot(cats_uk_reference, aes(hrs_indoors, prey_p_month, colour=animal_sex)) + 
+  geom_count() + 
+  geom_smooth(method='lm')
+
+```
 
 
 
