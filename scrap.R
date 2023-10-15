@@ -1,21 +1,28 @@
 library(readr)
 library(lava)
+library(missMethods)
 library(simputation)
 
 library(ggplot2)
 
-cats_uk <- readr::read_csv('cats_uk.csv')
-cats_uk_reference <- readr::read_csv('cats_uk_reference.csv')
+penguins <- readr::read_csv('penguins.csv')
 
-cats <- merge(cats_uk, cats_uk_reference, by='tag_id')
-summary(cats_uk)
+summary(penguins)
 
-cats_uk_missing <- makemissing(cats_uk)
+penguins_missing <- delete_MCAR(penguins,0.2,"flipper_length_mm")
 
-
-ggplot(cats_uk_reference, aes(hrs_indoors, prey_p_month, colour=animal_sex)) + 
+ggplot(penguins, aes(body_mass_g, flipper_length_mm)) + 
   geom_count() + 
   geom_smooth(method='lm')
 
-regg = lm(prey_p_month~hrs_indoors + n_cats + age_years, data = cats_uk_reference) #Create the linear regression
-summary(regg) #Review the results
+regg = lm(body_mass_g~ flipper_length_mm, data = penguins) 
+summary(regg)
+
+penguins_imputed <- impute_median(penguins_missing, flipper_length_mm ~ species + bill_length_mm + bill_depth_mm)
+
+regg = lm(body_mass_g~ flipper_length_mm, data = penguins_imputed)
+summary(regg)
+
+regg = lm(body_mass_g~ flipper_length_mm, data = penguins_missing) 
+summary(regg)
+

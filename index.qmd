@@ -14,31 +14,51 @@ When data is missing in a dataset, it can be handled in two ways. First would be
 	
 "Multivariate Imputation by Chained Equation (MICE) predicts missing data using the existing data of other variables. Then it replaces missing values using the predicted values and creates a dataset called imputed dataset. By iteration, it creates multiple imputed datasets. Each dataset is then analyzed using standard statistical analysis techniques, and multiple analysis results are provided." [1] The downside of this methodology is that it can be complex to implement, assumes that the data is missing at random, has a risk of overfitting, and requires many resources; however, it has the ability to impute more accurate data than single imputation based on underlying patterns in the data
 
+
+The code block below demonstrate the penguins dataset that we will be using and shows the correlation between body_mass_g and flipper_legth_mm that we will be using to construct a model before and after imputation of missing data.
+
+
 ```{r}
 #| warning: false
 
 library(readr)
 library(lava)
+library(missMethods)
 library(simputation)
+
 library(ggplot2)
 
-cats_uk <- readr::read_csv('cats_uk.csv')
-cats_uk_reference <- readr::read_csv('cats_uk_reference.csv')
+penguins <- readr::read_csv('penguins.csv')
 
-cats <- merge(cats_uk, cats_uk_reference, by='tag_id')
-summary(cats_uk)
-
-cats_uk_missing <- makemissing(cats_uk)
-
-ggplot(cats_uk_reference, aes(hrs_indoors, prey_p_month, colour=animal_sex)) + 
+ggplot(penguins, aes(body_mass_g, flipper_length_mm)) + 
   geom_count() + 
   geom_smooth(method='lm')
 
+
 ```
 
+In the code block below, we will create 20% missing at random data in the column flipper_length_mm. Then we will create a linear regression to display the r-squared that would be achieved without performing any imputation on the data set.
 
 
+```{r}
+#| warning: false
+penguins_missing <- delete_MCAR(penguins,0.2,"flipper_length_mm")
 
+regg = lm(body_mass_g~ flipper_length_mm, data = penguins_missing) 
+summary(regg)$adj.r.squared
+
+```
+
+Now we will proceed to impute median values into the missing data set for bill_length_mm and construct the same model to achieve an increase in r-squared.
+
+```{r}
+#| warning: false
+penguins_imputed <- impute_median(penguins_missing, flipper_length_mm ~ species + bill_length_mm + bill_depth_mm)
+
+regg = lm(body_mass_g~ flipper_length_mm, data = penguins_imputed)
+summary(regg)$adj.r.squared
+
+```
 
 References 
 
