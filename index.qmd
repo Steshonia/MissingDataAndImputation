@@ -34,6 +34,7 @@ ggplot(penguins, aes(body_mass_g, flipper_length_mm)) +
 
 
 
+
 ```
 
 In the code block below, we will create 50% missing at random data in the column flipper_length_mm using the missMethods [@missMethods] package. Then we will create a linear regression to display the r-squared that would be achieved without performing any imputation on the data set.
