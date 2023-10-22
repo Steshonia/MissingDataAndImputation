@@ -10,7 +10,6 @@ data("penguins")
 penguin_rows_with_na <- penguins[!complete.cases(penguins), ]
 print(penguin_rows_with_na)
 
-
 # In this case, the dataset only has 11 rows with NA values.
 11/344
 # Once those rows are removed, we retain 333 out of 344 rows. We only lose 0.03% of the entire dataset. 
@@ -52,7 +51,7 @@ penguins_Mean_imputated$bill_depth_mm[is.na(penguins_Mean_imputated$bill_depth_m
 penguins_Mean_imputated$flipper_length_mm[is.na(penguins_Mean_imputated$flipper_length_mm)] <- flipper_length_mm_mean_value
 penguins_Mean_imputated$body_mass_g[is.na(penguins_Mean_imputated$body_mass_g)] <- body_mass_g_mean_value
 
-penguins_Mean_imputated[!complete.cases(penguins), ]
+penguins_Mean_imputated[!complete.cases(penguins) ]
 
 
 # For all columns with numeric values we can simply calculate the mean, median, or mode and replace the NA values. However, the sex column is composed
@@ -64,12 +63,13 @@ sex_values <- c("female", "male")
 # Replace NAs in the 'sex' column with random values
 penguins_Mean_imputated$sex[is.na(penguins_Mean_imputated$sex)] <- sample(sex_values, size = sum(is.na(penguins_Mean_imputated$sex)), replace = TRUE)
 
-penguins_Mean_imputated[!complete.cases(penguins), ]
+penguins_Mean_imputated[!complete.cases(penguins) ]
 
 regg = lm(body_mass_g~ flipper_length_mm, data = penguins_Mean_imputated, na.action=na.omit)
 print(paste(summary(regg)$adj.r.squared, "is the R-Squared for the linear model where missing values are excluded from the dataset."))
 
 #Using the mean to replace all missing values resulted in a 0.3461 R-squared showing the difference resulting in actual data collected compared to data
 #that was created. 
+
 
 
